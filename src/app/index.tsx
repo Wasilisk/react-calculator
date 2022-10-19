@@ -4,13 +4,13 @@ import { CalculatorPage } from 'pages/calculator';
 
 import { GlobalStyles } from './styles/global-styles';
 
-const App = () => {
-  return (
-    <React.StrictMode>
-      <CalculatorPage/>
-      <GlobalStyles/>
-    </React.StrictMode>
-  );
-}
+import { withProviders } from './providers';
 
-export default App;
+const App = () => (
+  <React.StrictMode>
+    <CalculatorPage />
+    <GlobalStyles />
+  </React.StrictMode>
+);
+
+export default withProviders(App);

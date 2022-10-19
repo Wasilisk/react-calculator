@@ -1,24 +1,9 @@
-export type OperatorType = "add" | "substract" | "equals";
+import { CalcInput } from "shared/types";
 
-export type CalcInput = { type: "numerical", value: number } | { type: "operator", operator: OperatorType }
-
-export type CalcState = {
-    displayValue: number
-}
-
-export type Operation = {
-    operator: OperatorType,
-    value: number
-}
-
-type OperationsBuilder = {
-    operations: Operation[],
-    working: Operation;
-}
+import { CalcState, Operation, OperationsBuilder } from "./types";
 
 export class Calculator {
-
-    private getOperationsBuilder(inputs: Array<CalcInput>): OperationsBuilder {
+    private static getOperationsBuilder(inputs: Array<CalcInput>): OperationsBuilder {
         return inputs.reduce<OperationsBuilder>(
             (builder, input) => {
                 switch (input.type) {
@@ -58,7 +43,7 @@ export class Calculator {
         );
     }
 
-    private getTotal(operations: Array<Operation>) {
+    private static getTotal(operations: Array<Operation>) {
         return operations.reduce<number>((sum, operation) => {
             switch (operation.operator) {
                 case "add": {
@@ -74,7 +59,7 @@ export class Calculator {
         }, 0)
     }
 
-    getState(inputs: Array<CalcInput>): CalcState {
+    static getState(inputs: Array<CalcInput>): CalcState {
         const { operations, working } = this.getOperationsBuilder(inputs);
         const lastOperation = operations.length
             ? operations[operations.length - 1]
@@ -82,7 +67,7 @@ export class Calculator {
         const lastInput = inputs.length ? inputs[inputs.length - 1] : null;
         const total = this.getTotal(operations);
 
-        if (!lastOperation) return { displayValue: 0 }
+        if (!lastOperation) return { displayValue: working.value }
 
         if (lastOperation.operator === "equals") {
             return { displayValue: total }

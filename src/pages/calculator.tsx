@@ -1,16 +1,13 @@
-import { Container } from "entities/calculator/ui/container";
-import { Button } from "entities/calculator/ui/button";
-import { Display } from "entities/calculator/ui/display";
-import { useCalculator } from "entities/calculator/model/use-calculator";
+import { Button, Container, Display, useCalculator } from "entities/calculator";
 
 export const CalculatorPage = () => {
-    const { displayedValue, handleAllClear, handleDelete, handleNumerical, handleOperator } = useCalculator();
+    const { displayValue, handleAllClear, handleUndo, handleNumerical, handleOperator } = useCalculator();
 
     return (
         <Container>
-            <Display>{displayedValue}</Display>
+            <Display>{displayValue}</Display>
             <Button buttonType="operation" position={[0, 1]} width={2} onClick={handleAllClear}>AC</Button>
-            <Button buttonType="operation" position={[2, 1]} width={2} onClick={handleDelete}>Delete</Button>
+            <Button buttonType="operation" position={[2, 1]} width={2} onClick={handleUndo}>Undo</Button>
             <Button buttonType="operation" position={[3, 2]} onClick={handleOperator("substract")}>-</Button>
             <Button buttonType="operation" position={[3, 3]} onClick={handleOperator("add")}>+</Button>
             <Button buttonType="operation" position={[3, 4]} height={2} onClick={handleOperator("equals")}>=</Button>
