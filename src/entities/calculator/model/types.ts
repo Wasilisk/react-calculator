@@ -1,7 +1,7 @@
-import { OperatorType } from "shared/types"
+import { CalcInput, OperatorType } from "shared/types"
 
 export type CalcState = {
-    displayValue: number
+    inputs: CalcInput[]
 }
 
 export type Operation = {
@@ -13,3 +13,9 @@ export type OperationsBuilder = {
     operations: Operation[],
     working: Operation;
 }
+
+export type Events = OperatorType | "clear" | "undo" | "number";
+
+export type SubscriptionsType = Record<Events, Array<SubscriptionCallback>>
+
+export type SubscriptionCallback = (value: number) => void

@@ -1,12 +1,18 @@
-import { ReactNode } from "react"
+import { Dispatch, ReactNode } from "react"
 
-import { CalcInput } from "shared/types"
+import { Calculator } from "entities/calculator"
+import { Events } from "entities/calculator/model/types"
 
 export type CalculatorContextType = {
-    inputs: Array<CalcInput>,
-    setInputs: React.Dispatch<React.SetStateAction<Array<CalcInput>>>,
-    displayValue: number,
-    setDisplayValue: React.Dispatch<React.SetStateAction<number>>,
+    value: number,
+    setValue: Dispatch<React.SetStateAction<number>>,
+    addListener: (event: Events, callback: (value: number) => void) => void,
+    handleNumerical: (value: number) => Calculator,
+    handleAdd: () => Calculator,
+    handleSubstract: () => Calculator,
+    handleEquals: () => Calculator,
+    handleClearAll: () => Calculator,
+    handleUndo: () => Calculator
 }
 
 export type CalculatorProviderProps = {

@@ -1,13 +1,6 @@
 import styled from "styled-components"
 
-type ButtonType = "number" | "operation"
-
-type ButtonProps = {
-    buttonType?: ButtonType,
-    position?: [x: number, y: number],
-    width?: number,
-    height?: number,
-}
+import { ButtonProps } from "./types"
 
 export const Button = styled.button<ButtonProps>`
     background: ${({ buttonType = "number" }) => buttonType === "number" ? "#e48900" : "#727171"};

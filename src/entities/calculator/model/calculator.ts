@@ -1,9 +1,81 @@
 import { CalcInput } from "shared/types";
 
-import { CalcState, Operation, OperationsBuilder } from "./types";
+import { CalcState, Events, Operation, OperationsBuilder, SubscriptionCallback } from "./types";
 
 export class Calculator {
-    private static getOperationsBuilder(inputs: Array<CalcInput>): OperationsBuilder {
+    state: CalcState = {
+        inputs: []
+    }
+
+    subscriptions: any = {};
+
+    public get value() {
+        const value = this.getState();
+        return value;
+    }
+
+    listen(event: Events, callback: (value: number) => void) {
+        if (this.subscriptions[event]) {
+            this.subscriptions[event] = [...this.subscriptions[event], callback];
+        } else {
+            this.subscriptions[event] = [callback];
+        }
+
+        const unlisnten = () =>
+            this.subscriptions[event].filter((lcallback: SubscriptionCallback) => lcallback !== callback);
+
+        return unlisnten;
+    }
+
+    add() {
+        this.state.inputs = [...this.state.inputs, { type: "operator", operator: "add" }];
+
+        this.subscriptions["add"]?.forEach((callback: SubscriptionCallback) => callback(this.value));
+
+        return this;
+    }
+
+    substract() {
+        this.state.inputs = [...this.state.inputs, { type: "operator", operator: "substract" }];
+        
+        this.subscriptions["substract"]?.forEach((callback: SubscriptionCallback) => callback(this.value));
+
+        return this;
+    }
+
+    number(value: number) {
+        this.state.inputs = [...this.state.inputs, { type: "numerical", value }];
+
+        this.subscriptions["number"]?.forEach((callback:any) => callback(this.value));
+
+        return this;
+    }
+
+    equals() {
+        this.state.inputs = [...this.state.inputs, { type: "operator", operator: "equals" }];
+
+        this.subscriptions["equals"]?.forEach((callback: SubscriptionCallback) => callback(this.value));
+
+        return this;
+    }
+
+    clearAll() {
+        this.state.inputs = [];
+
+        this.subscriptions["clear"]?.forEach((callback:SubscriptionCallback) => callback(this.value));
+
+        return this;
+    }
+
+    undo() {
+        this.state.inputs = this.state.inputs.slice(0, -1);
+
+        this.subscriptions["undo"]?.forEach((callback: SubscriptionCallback) => callback(this.value));
+
+        return this;
+    }
+
+    private getOperationsBuilder(inputs: Array<CalcInput>): OperationsBuilder {
         return inputs.reduce<OperationsBuilder>(
             (builder, input) => {
                 switch (input.type) {
@@ -43,7 +115,7 @@ export class Calculator {
         );
     }
 
-    private static getTotal(operations: Array<Operation>) {
+    private getTotal(operations: Array<Operation>) {
         return operations.reduce<number>((sum, operation) => {
             switch (operation.operator) {
                 case "add": {
@@ -59,7 +131,8 @@ export class Calculator {
         }, 0)
     }
 
-    static getState(inputs: Array<CalcInput>): CalcState {
+    private getState(): number {
+        const inputs = this.state.inputs
         const { operations, working } = this.getOperationsBuilder(inputs);
         const lastOperation = operations.length
             ? operations[operations.length - 1]
@@ -67,16 +140,14 @@ export class Calculator {
         const lastInput = inputs.length ? inputs[inputs.length - 1] : null;
         const total = this.getTotal(operations);
 
-        if (!lastOperation) return { displayValue: working.value }
+        if (!lastOperation) return working.value
 
         if (lastOperation.operator === "equals") {
-            return { displayValue: total }
+            return total
         } else {
-            return {
-                displayValue: lastInput && lastInput.type === "numerical"
-                    ? working.value
-                    : total
-            }
+            return lastInput && lastInput.type === "numerical"
+                ? working.value
+                : total
         }
     }
 }
